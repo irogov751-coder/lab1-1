@@ -25,6 +25,10 @@ int main(){
     char buffer_txt[1005];
     if(fgets(buffer_txt, sizeof(buffer_txt), stdin)==NULL) return 0;
     int text_len = (int)strlen(buffer_txt);
+    if (len>text_len){
+        free(strarray);
+        return 0;
+    }
     for(int i = 0; i+len<=text_len; i++){
         long long hash_txt = hash(((const unsigned char *)&buffer_txt[i]), len);
         if(hash_txt == osn){
@@ -36,9 +40,9 @@ int main(){
                 }
             }
             if (f==1){
-                printf("%lld ", osn);
+                printf("%I64d ", osn);
                 for(int j = 0; j<len; j++){
-                    printf("%d ", i+j+2);
+                    printf("%d ", i+j+1);
                 }
                 printf("\n");
             
