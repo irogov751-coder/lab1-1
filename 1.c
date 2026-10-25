@@ -15,37 +15,37 @@ long long hash(const unsigned char* array, int len){
 }
 
 int main(){
-    unsigned char* strarray = malloc(18*sizeof(char));
-    scanf("%17s", (char *)strarray);
-    int c;
-    while((c = getchar())!='\n' && c!=EOF);
-
-    int len = (int)strlen((const char *)strarray);
-    long long osn = hash((const unsigned char*)strarray, len);
-    char buffer_txt[1005];
-    if(fgets(buffer_txt, sizeof(buffer_txt), stdin)==NULL) return 0;
-    int text_len = (int)strlen(buffer_txt);
-    if (len>text_len){
-        free(strarray);
+    char line[18];
+    char text_buffer[1000];
+    char temp[1000+18];
+    if(fgets(line, sizeof(line), stdin)==NULL){
         return 0;
     }
-    for(int i = 0; i+len<=text_len; i++){
-        long long hash_txt = hash(((const unsigned char *)&buffer_txt[i]), len);
-        if(hash_txt == osn){
-            int f =1;
-            for(int j = 0; j<len; j++){
-                if(strarray[j]!=buffer_txt[i+j]){
-                    f = 0;
-                    break;
-                }
-            }
-            if (f==1){
-                printf("%I64d ", osn);
+    int len = strlen(line);
+    if(len>0 && line[len-1]=='\n'){
+        line[--len]='\0';
+    }
+    if(len>0 && line[len-1]=='\r'){
+        line[--len] = '\0';
+    }
+    int saved = 0;
+    int total = 0;
+    long long pattern_hash = hash(line, len);
+    printf("%lld ", pattern_hash);
+    while(fgets(text_buffer, sizeof(text_buffer), stdin)!=NULL){
+        int len_t = strlen(text_buffer);
+        memcpy(temp+saved, text_buffer, len_t);
+        int current_len = len_t+saved;
+        for(int i = 0; i+len<=current_len;i++){
+            if(total+i+len<=total+saved)
+                continue;
+            long long txt_hash = hash((unsigned char*)&temp[i], len);
+            if(pattern_hash==txt_hash){
                 for(int j = 0; j<len; j++){
-                    printf("%d ", i+j+1);
+                    printf("%d ", total-saved+i+j+1);
+
+                    if(line[j]!=temp[i+j]) break;
                 }
-                printf("\n");
-            
             }
         }
     }
