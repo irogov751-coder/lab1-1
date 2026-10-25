@@ -22,22 +22,22 @@ int main(){
         return 0;
     }
     int len = strlen(line);
-    if(len>0 && line[len-1]=='\n'){
+    if(len>0 && line[len-1]=='\n'){//исчисляем длинну патерна без переноса
         line[--len]='\0';
     }
     if(len>0 && line[len-1]=='\r'){
         line[--len] = '\0';
     }
-    int saved = 0;
-    int total = 0;
+    int saved = 0; //сохраненные символы с прошлой строки
+    long long total = 0;
     long long pattern_hash = hash(line, len);
     printf("%lld ", pattern_hash);
     while(fgets(text_buffer, sizeof(text_buffer), stdin)!=NULL){
-        int len_t = strlen(text_buffer);
+        int len_t = (int)strlen(text_buffer);
         memcpy(temp+saved, text_buffer, len_t);
         int current_len = len_t+saved;
         for(int i = 0; i+len<=current_len;i++){
-            if(total+i+len<=total+saved)
+            if(i+len<=saved)
                 continue;
             long long txt_hash = hash((unsigned char*)&temp[i], len);
             if(pattern_hash==txt_hash){
@@ -48,5 +48,11 @@ int main(){
                 }
             }
         }
+        total+=len_t;
+        saved = current_len<len-1?current_len:len-1;
+        if(saved>0){
+            memmove(temp, temp+current_len-saved, saved);
+        }
     }
+    return 0;
 }
